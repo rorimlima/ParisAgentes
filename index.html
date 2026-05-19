@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Sistema de visualização de veículos bloqueados - Paris Dakar Veículos">
+  <meta name="theme-color" content="#0F2039">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PD Bloqueios">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <title>Paris Dakar - Veículos Bloqueados</title>
+</head>
+<body>
+
+  <!-- ═══════ LOGIN SCREEN ═══════ -->
+  <section id="loginScreen" class="screen active">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="logo-icon">🛡️</div>
+          <h1>Paris Dakar</h1>
+          <p>Sistema de Veículos Bloqueados</p>
+        </div>
+        <form id="loginForm" autocomplete="off">
+          <div class="form-group">
+            <label for="userInput">Usuário</label>
+            <span class="input-icon">👤</span>
+            <input type="text" id="userInput" placeholder="nome.sobrenome" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="passInput">Senha</label>
+            <span class="input-icon">🔑</span>
+            <input type="password" id="passInput" placeholder="Digite sua senha" required autocomplete="current-password">
+          </div>
+          <button type="submit" id="btnLogin" class="btn-login">
+            <span id="btnLoginText">Entrar</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ DASHBOARD SCREEN ═══════ -->
+  <section id="dashboardScreen" class="screen">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <h2>PD Bloqueios</h2>
+          <span>Agente: <strong id="welcomeUser">—</strong></span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="sync-status">
+          <span id="syncDot" class="sync-dot"></span>
+          <span id="syncText" class="sync-text">Conectando...</span>
+        </div>
+        <button id="btnLogout" class="btn-logout">
+          <span>Sair</span> 🚪
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Body -->
+    <main class="dashboard-body">
+      <!-- Stats -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-icon total">📋</div>
+          <div class="stat-info">
+            <h3 id="statTotal">0</h3>
+            <p>Total Veículos</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blocked">🔒</div>
+          <div class="stat-info">
+            <h3 id="statBlocked">0</h3>
+            <p>Bloqueio Total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon sync">🔄</div>
+          <div class="stat-info">
+            <h3 id="statSync">--:--</h3>
+            <p>Última Sincronia</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar por placa, chassi ou modelo...">
+      </div>
+
+      <!-- Vehicles Grid -->
+      <div id="vehiclesGrid" class="vehicles-grid">
+        <div class="empty-state">
+          <div class="empty-icon">🚗</div>
+          <h3>Carregando veículos...</h3>
+          <p>Aguarde a sincronização dos dados.</p>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ═══════ LOADING OVERLAY ═══════ -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p id="loadingText">Carregando...</p>
+  </div>
+
+  <!-- ═══════ TOAST CONTAINER ═══════ -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ═══════ SCRIPTS (CDN — no node_modules) ═══════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
