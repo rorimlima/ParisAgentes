@@ -313,7 +313,8 @@ async function syncFromSupabase() {
   try {
     const { data, error } = await supabase
       .from('veiculos_bloqueados')
-      .select('*')
+      .select('id, chassi, placa, modelo_descricao, cor, ano_modelo, razao_social, status_financeiro, status_documentacao, status_final, bloqueado_em, removido_em')
+      .is('removido_em', null)
       .order('bloqueado_em', { ascending: false });
 
     if (error) throw error;
@@ -362,7 +363,7 @@ function updateStats() {
   const veiculos = offlineDB.getAllVeiculos();
   const total = veiculos.length;
   const bloqueados = veiculos.filter(v =>
-    v.status && v.status.toLowerCase().includes('total')
+    v.status && (v.status.toLowerCase().includes('bloqueio') || v.status.toLowerCase().includes('bloqueado'))
   ).length;
   const lastSync = offlineDB.getLastSync();
 
@@ -399,7 +400,7 @@ function renderVehicles(veiculos) {
 
   DOM.vehiclesGrid.innerHTML = veiculos.map((v) => {
     const statusLabel = formatStatus(v.status);
-    const statusClass = v.status && v.status.toLowerCase().includes('total') ? 'total' : '';
+    const statusClass = getStatusClass(v.status);
     const dataFormatted = formatDate(v.data_bloqueio);
 
     return `
@@ -417,21 +418,46 @@ function renderVehicles(veiculos) {
             <span class="detail-label">Chassi</span>
             <span class="detail-value">${escapeHtml(v.chassi || '—')}</span>
           </div>
+          ${v.cor ? `<div class="vehicle-detail">
+            <span class="detail-label">Cor</span>
+            <span class="detail-value">${escapeHtml(v.cor)}</span>
+          </div>` : ''}
+          ${v.razao_social ? `<div class="vehicle-detail">
+            <span class="detail-label">Cliente</span>
+            <span class="detail-value">${escapeHtml(v.razao_social)}</span>
+          </div>` : ''}
           <div class="vehicle-detail">
             <span class="detail-label">Bloqueio</span>
             <span class="detail-value">${dataFormatted}</span>
           </div>
+          ${v.status_financeiro || v.status_documentacao ? `<div class="vehicle-detail">
+            <span class="detail-label">Financeiro</span>
+            <span class="detail-value">${escapeHtml(v.status_financeiro || '—')}</span>
+          </div>
+          <div class="vehicle-detail">
+            <span class="detail-label">Documentação</span>
+            <span class="detail-value">${escapeHtml(v.status_documentacao || '—')}</span>
+          </div>` : ''}
         </div>
       </div>`;
   }).join('');
 }
 
+function getStatusClass(status) {
+  if (!status) return '';
+  const s = status.toLowerCase();
+  if (s.includes('duplo') || s.includes('total')) return 'total';
+  return 'blocked';
+}
+
 function formatStatus(status) {
   if (!status) return 'Bloqueado';
   const s = status.toLowerCase();
+  if (s.includes('duplo')) return '🔒🔒 Duplo Bloqueio';
   if (s.includes('total')) return '🔒 Bloqueio Total';
   if (s.includes('financ')) return '💰 Financeiro';
   if (s.includes('doc')) return '📄 Documentação';
+  if (s.includes('bloqueado') || s.includes('bloqueio')) return '🔒 ' + status;
   return status;
 }
 

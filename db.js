@@ -52,13 +52,20 @@ class OfflineDB {
 
   // ─── Create schema ────────────────────────────────────────
   _createTables() {
-    // Migration: If the existing table has INTEGER for the id column, drop it so it can be recreated as TEXT
+    // Migration: Drop and recreate table if schema is outdated
     try {
       const info = this.db.exec("PRAGMA table_info(veiculos_bloqueados)");
       if (info.length > 0) {
+        const columns = info[0].values.map(col => col[1]);
         const idColumn = info[0].values.find(col => col[1] === 'id');
-        if (idColumn && idColumn[2].toUpperCase() === 'INTEGER') {
-          console.log('[DB] Migrating local veiculos_bloqueados table from INTEGER to TEXT id...');
+        const needsMigration = 
+          (idColumn && idColumn[2].toUpperCase() === 'INTEGER') ||
+          !columns.includes('cor') ||
+          !columns.includes('razao_social') ||
+          !columns.includes('status_financeiro');
+        
+        if (needsMigration) {
+          console.log('[DB] Migrating local veiculos_bloqueados table to new schema...');
           this.db.run("DROP TABLE veiculos_bloqueados");
         }
       }
@@ -72,7 +79,11 @@ class OfflineDB {
         placa TEXT,
         modelo TEXT,
         chassi TEXT,
+        cor TEXT,
+        razao_social TEXT,
         status TEXT,
+        status_financeiro TEXT,
+        status_documentacao TEXT,
         data_bloqueio TEXT,
         synced_at TEXT DEFAULT (datetime('now'))
       );
@@ -149,8 +160,8 @@ class OfflineDB {
 
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO veiculos_bloqueados 
-        (id, placa, modelo, chassi, status, data_bloqueio, synced_at)
-      VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        (id, placa, modelo, chassi, cor, razao_social, status, status_financeiro, status_documentacao, data_bloqueio, synced_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `);
 
     // Get IDs from server to detect deletions
@@ -173,7 +184,11 @@ class OfflineDB {
         v.placa || '',
         v.modelo_descricao || '',
         v.chassi || '',
+        v.cor || '',
+        v.razao_social || '',
         v.status_final || '',
+        v.status_financeiro || '',
+        v.status_documentacao || '',
         v.bloqueado_em || ''
       ]);
     });
@@ -194,7 +209,7 @@ class OfflineDB {
   getAllVeiculos() {
     try {
       const result = this.db.exec(`
-        SELECT id, placa, modelo, chassi, status, data_bloqueio, synced_at
+        SELECT id, placa, modelo, chassi, cor, razao_social, status, status_financeiro, status_documentacao, data_bloqueio, synced_at
         FROM veiculos_bloqueados
         ORDER BY data_bloqueio DESC
       `);
@@ -206,9 +221,13 @@ class OfflineDB {
         placa: row[1],
         modelo: row[2],
         chassi: row[3],
-        status: row[4],
-        data_bloqueio: row[5],
-        synced_at: row[6]
+        cor: row[4],
+        razao_social: row[5],
+        status: row[6],
+        status_financeiro: row[7],
+        status_documentacao: row[8],
+        data_bloqueio: row[9],
+        synced_at: row[10]
       }));
     } catch (err) {
       console.error('[DB] Error reading veículos:', err);
@@ -223,11 +242,11 @@ class OfflineDB {
     const q = `%${query.toUpperCase().trim()}%`;
     try {
       const result = this.db.exec(`
-        SELECT id, placa, modelo, chassi, status, data_bloqueio, synced_at
+        SELECT id, placa, modelo, chassi, cor, razao_social, status, status_financeiro, status_documentacao, data_bloqueio, synced_at
         FROM veiculos_bloqueados
-        WHERE UPPER(placa) LIKE ? OR UPPER(chassi) LIKE ? OR UPPER(modelo) LIKE ?
+        WHERE UPPER(placa) LIKE ? OR UPPER(chassi) LIKE ? OR UPPER(modelo) LIKE ? OR UPPER(razao_social) LIKE ?
         ORDER BY data_bloqueio DESC
-      `, [q, q, q]);
+      `, [q, q, q, q]);
 
       if (!result.length) return [];
 
@@ -236,9 +255,13 @@ class OfflineDB {
         placa: row[1],
         modelo: row[2],
         chassi: row[3],
-        status: row[4],
-        data_bloqueio: row[5],
-        synced_at: row[6]
+        cor: row[4],
+        razao_social: row[5],
+        status: row[6],
+        status_financeiro: row[7],
+        status_documentacao: row[8],
+        data_bloqueio: row[9],
+        synced_at: row[10]
       }));
     } catch (err) {
       console.error('[DB] Search error:', err);
