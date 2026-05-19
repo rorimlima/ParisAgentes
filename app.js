@@ -33,13 +33,17 @@ const DOM = {
   loadingOverlay: $('#loadingOverlay'),
   loadingText: $('#loadingText'),
   toastContainer: $('#toastContainer'),
-  welcomeUser: $('#welcomeUser')
+  welcomeUser: $('#welcomeUser'),
+  loginThemeBtn: $('#loginThemeBtn'),
+  dashThemeBtn: $('#dashThemeBtn'),
+  themeColorMeta: $('#themeColorMeta')
 };
 
 // ─── Initialize App ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   registerServiceWorker();
   initSupabase();
+  initTheme();
   bindEvents();
   checkSession();
 });
@@ -64,10 +68,38 @@ function initSupabase() {
   }
 }
 
+// ─── THEME ───────────────────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('pd_theme') || 'dark';
+  applyTheme(saved);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : '');
+  const icon = theme === 'light' ? '🌙' : '☀️';
+  if (DOM.loginThemeBtn) DOM.loginThemeBtn.textContent = icon;
+  if (DOM.dashThemeBtn)  DOM.dashThemeBtn.textContent  = icon;
+
+  // Update meta theme-color for PWA
+  const metaColor = theme === 'light' ? '#FAF7F2' : '#080C10';
+  if (DOM.themeColorMeta) DOM.themeColorMeta.setAttribute('content', metaColor);
+
+  localStorage.setItem('pd_theme', theme);
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem('pd_theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
 function bindEvents() {
   DOM.loginForm.addEventListener('submit', handleLogin);
   DOM.btnLogout.addEventListener('click', handleLogout);
   DOM.searchInput.addEventListener('input', handleSearch);
+
+  // Theme toggles
+  if (DOM.loginThemeBtn) DOM.loginThemeBtn.addEventListener('click', toggleTheme);
+  if (DOM.dashThemeBtn)  DOM.dashThemeBtn.addEventListener('click', toggleTheme);
 
   // Network status listener
   window.addEventListener('online', () => {

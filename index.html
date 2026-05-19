@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Sistema de visualização de veículos bloqueados - Paris Dakar Veículos">
-  <meta name="theme-color" content="#0F2039">
+  <meta name="theme-color" content="#080C10" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PD Bloqueios">
@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="icon-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <title>Paris Dakar - Veículos Bloqueados</title>
 </head>
@@ -21,6 +21,9 @@
 
   <!-- ═══════ LOGIN SCREEN ═══════ -->
   <section id="loginScreen" class="screen active">
+    <!-- Theme Toggle -->
+    <button class="login-theme-btn" id="loginThemeBtn" title="Alternar tema" aria-label="Alternar modo claro/escuro">☀️</button>
+
     <div class="login-container">
       <div class="login-card">
         <div class="login-logo">
@@ -63,6 +66,7 @@
           <span id="syncDot" class="sync-dot"></span>
           <span id="syncText" class="sync-text">Conectando...</span>
         </div>
+        <button class="btn-theme" id="dashThemeBtn" title="Alternar tema" aria-label="Alternar modo claro/escuro">☀️</button>
         <button id="btnLogout" class="btn-logout">
           <span>Sair</span> 🚪
         </button>
@@ -84,7 +88,7 @@
           <div class="stat-icon blocked">🔒</div>
           <div class="stat-info">
             <h3 id="statBlocked">0</h3>
-            <p>Bloqueio Total</p>
+            <p>Bloqueados</p>
           </div>
         </div>
         <div class="stat-card">
@@ -99,7 +103,7 @@
       <!-- Search -->
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Buscar por placa, chassi ou modelo...">
+        <input type="text" id="searchInput" placeholder="Buscar por placa, chassi, modelo ou cliente...">
       </div>
 
       <!-- Vehicles Grid -->
