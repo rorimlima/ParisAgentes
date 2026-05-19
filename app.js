@@ -40,13 +40,21 @@ const DOM = {
 };
 
 // ─── Initialize App ─────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
+// DOMContentLoaded may have already fired by the time this script runs
+// (because the heavy CDN scripts above block and delay execution).
+// This pattern works whether the DOM is already ready or not.
+(function initApp() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+    return;
+  }
+  console.log('[App] Initializing... readyState:', document.readyState);
   registerServiceWorker();
   initSupabase();
   initTheme();
   bindEvents();
   checkSession();
-});
+})();
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {

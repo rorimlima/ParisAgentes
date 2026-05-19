@@ -3,7 +3,7 @@
 // v2 — Network-first for app files, cache-first for CDN
 // ============================================================
 
-const CACHE_NAME = 'pd-bloqueios-v2';
+const CACHE_NAME = 'pd-bloqueios-v3';
 const APP_FILES = [
   '/',
   '/index.html',
