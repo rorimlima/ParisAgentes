@@ -209,22 +209,37 @@ async function handleLogin(e) {
   }
 
   try {
-    // Hash the password with SHA-256 to compare against senha_hash
     const senhaHash = await sha256(senha);
 
+    // Fetch user by nome and sobrenome only, to verify hash and ativo in JS
     const { data, error } = await supabase
       .from('colaboradores')
-      .select('id, nome, sobrenome, departamento')
+      .select('id, nome, sobrenome, departamento, ativo, senha_hash')
       .eq('nome', nome)
       .eq('sobrenome', sobrenome)
-      .eq('senha_hash', senhaHash)
-      .eq('ativo', 1)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      console.error('[App] Supabase login query error:', error);
+      throw error;
+    }
 
     if (!data) {
       showToast('Usuário não cadastrado', 'error');
+      setLoginLoading(false);
+      return;
+    }
+
+    // Verify hash
+    if (data.senha_hash !== senhaHash) {
+      showToast('Senha incorreta', 'error');
+      setLoginLoading(false);
+      return;
+    }
+
+    // Verify ativo status (could be integer 1 or boolean true)
+    if (data.ativo !== 1 && data.ativo !== true && String(data.ativo) !== "1" && String(data.ativo) !== "true") {
+      showToast('Usuário inativo', 'error');
       setLoginLoading(false);
       return;
     }
