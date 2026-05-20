@@ -78,9 +78,7 @@ export default function Dashboard({ user, onLogout }) {
                syncStatus === 'loading' ? 'Carregando...' : 'Offline'}
             </span>
           </div>
-          <button className="btn-refresh" onClick={sync} disabled={syncing} title="Sincronizar">
-            <span className={syncing ? 'spin' : ''}>🔄</span>
-          </button>
+
           <button className="btn-logout" onClick={onLogout}>
             <span>Sair</span>
             <span>🚪</span>
@@ -163,6 +161,19 @@ export default function Dashboard({ user, onLogout }) {
           <span>{toast.message}</span>
         </div>
       )}
+
+      {/* FAB — Sync Button */}
+      <button
+        id="fab-sync"
+        className={`fab-sync${syncing ? ' fab-syncing' : ''}`}
+        onClick={sync}
+        disabled={syncing}
+        title="Atualizar dados"
+        aria-label="Sincronizar dados"
+      >
+        <span className="fab-icon">🔄</span>
+        <span className="fab-label">{syncing ? 'Atualizando...' : 'Atualizar'}</span>
+      </button>
     </section>
   );
 }

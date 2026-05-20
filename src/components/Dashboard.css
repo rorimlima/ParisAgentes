@@ -145,9 +145,7 @@
   border-color: var(--border-medium);
 }
 
-.btn-refresh {
-  padding: 8px 10px;
-}
+
 
 .btn-logout:hover {
   border-color: var(--danger-border);
@@ -372,6 +370,30 @@
     grid-template-columns: 1fr;
     gap: 12px;
   }
+
+  /* FAB menor no mobile */
+  .fab-sync {
+    bottom: 20px;
+    right: 16px;
+    padding: 14px 16px;
+    border-radius: 50px;
+  }
+
+  .fab-label {
+    display: none;
+  }
+
+  .fab-sync {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .fab-icon {
+    font-size: 1.4rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -383,3 +405,73 @@
     font-size: 1.25rem;
   }
 }
+
+/* ─── FAB Sync Button (Floating Action Button) ──────────── */
+.fab-sync {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-radius: 50px;
+  border: 1px solid rgba(77, 138, 255, 0.35);
+  background: linear-gradient(135deg, rgba(77, 138, 255, 0.18) 0%, rgba(124, 92, 255, 0.18) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(77, 138, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.fab-sync:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.04);
+  background: linear-gradient(135deg, rgba(77, 138, 255, 0.3) 0%, rgba(124, 92, 255, 0.3) 100%);
+  border-color: rgba(77, 138, 255, 0.6);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(77, 138, 255, 0.35),
+    0 0 24px rgba(77, 138, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.fab-sync:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.fab-sync:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.fab-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.fab-label {
+  white-space: nowrap;
+}
+
+/* Ícone girando durante sincronização */
+.fab-syncing .fab-icon {
+  animation: spin-fab 0.8s linear infinite;
+}
+
+@keyframes spin-fab {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
