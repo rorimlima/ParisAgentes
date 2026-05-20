@@ -211,23 +211,46 @@ async function sha256(message) {
     .join('');
 }
 
+// ─── LOGIN ERROR DISPLAY ────────────────────────────────────
+function showLoginError(msg) {
+  console.error('[Login] ERRO:', msg);
+  showToast(msg, 'error');
+  // Also show error persistently on the login form
+  let errorDiv = document.getElementById('loginError');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'loginError';
+    errorDiv.style.cssText = 'color:#ff4d4d;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:0.9rem;text-align:center;animation:fadeIn 0.3s ease;';
+    DOM.loginForm.appendChild(errorDiv);
+  }
+  errorDiv.textContent = msg;
+  errorDiv.style.display = 'block';
+}
+
+function clearLoginError() {
+  const errorDiv = document.getElementById('loginError');
+  if (errorDiv) errorDiv.style.display = 'none';
+}
+
 // ─── LOGIN ──────────────────────────────────────────────────
 async function handleLogin(e) {
   e.preventDefault();
+  clearLoginError();
+
   const usuario = DOM.userInput.value.trim().toLowerCase();
   const senha = DOM.passInput.value.trim();
 
   console.log('[Login] Tentativa:', usuario);
 
   if (!usuario || !senha) {
-    showToast('Preencha todos os campos', 'error');
+    showLoginError('Preencha todos os campos');
     return;
   }
 
   // Parse nome.sobrenome format
   const parts = usuario.split('.');
   if (parts.length < 2) {
-    showToast('Use o formato nome.sobrenome', 'error');
+    showLoginError('Use o formato nome.sobrenome');
     return;
   }
   const nome = parts[0];
@@ -239,15 +262,19 @@ async function handleLogin(e) {
   if (!navigator.onLine) {
     const cached = localStorage.getItem('pd_agent_session');
     if (cached) {
-      const data = JSON.parse(cached);
-      if (data.usuario === usuario) {
-        currentUser = data;
-        showDashboard();
-        setLoginLoading(false);
-        return;
+      try {
+        const data = JSON.parse(cached);
+        if (data.usuario === usuario) {
+          currentUser = data;
+          showDashboard();
+          setLoginLoading(false);
+          return;
+        }
+      } catch (parseErr) {
+        console.warn('[Login] Cache parse error:', parseErr);
       }
     }
-    showToast('Sem conexão. Faça login online primeiro.', 'error');
+    showLoginError('Sem conexão. Faça login online primeiro.');
     setLoginLoading(false);
     return;
   }
@@ -256,43 +283,62 @@ async function handleLogin(e) {
     // Verify supabase client is ready
     if (!supabase) {
       console.error('[Login] Supabase client not initialized!');
-      showToast('Erro: cliente Supabase não inicializado. Recarregue a página.', 'error');
+      showLoginError('Erro: cliente Supabase não inicializado. Recarregue a página.');
       setLoginLoading(false);
       return;
     }
 
-    const senhaHash = await sha256(senha);
-    console.log('[Login] Hash gerado:', senhaHash.substring(0, 16) + '...');
+    let senhaHash;
+    try {
+      senhaHash = await sha256(senha);
+      console.log('[Login] Hash gerado:', senhaHash.substring(0, 16) + '...');
+    } catch (hashErr) {
+      console.error('[Login] Hash error:', hashErr);
+      showLoginError('Erro ao processar senha: ' + hashErr.message);
+      setLoginLoading(false);
+      return;
+    }
 
     // Fetch user by nome and sobrenome
     console.log('[Login] Buscando:', nome, sobrenome);
-    const { data, error } = await supabase
-      .from('colaboradores')
-      .select('id, nome, sobrenome, departamento, ativo, senha_hash')
-      .eq('nome', nome)
-      .eq('sobrenome', sobrenome)
-      .maybeSingle();
+    let result;
+    try {
+      result = await supabase
+        .from('colaboradores')
+        .select('id, nome, sobrenome, departamento, ativo, senha_hash')
+        .eq('nome', nome)
+        .eq('sobrenome', sobrenome)
+        .maybeSingle();
+    } catch (queryErr) {
+      console.error('[Login] Supabase fetch exception:', queryErr);
+      showLoginError('Erro de rede ao consultar servidor: ' + queryErr.message);
+      setLoginLoading(false);
+      return;
+    }
 
+    const { data, error } = result;
     console.log('[Login] Resposta Supabase:', { data: data ? 'encontrado' : 'null', error });
 
     if (error) {
       console.error('[Login] Supabase query error:', error);
-      showToast('Erro na consulta: ' + (error.message || 'desconhecido'), 'error');
+      showLoginError('Erro na consulta: ' + (error.message || JSON.stringify(error)));
       setLoginLoading(false);
       return;
     }
 
     if (!data) {
-      showToast('Usuário não cadastrado', 'error');
+      showLoginError('Usuário "' + usuario + '" não cadastrado');
       setLoginLoading(false);
       return;
     }
 
     console.log('[Login] Ativo:', data.ativo, '| Hash match:', data.senha_hash === senhaHash);
+    console.log('[Login] DB hash:', (data.senha_hash || '').substring(0, 16) + '...');
+    console.log('[Login] Input hash:', senhaHash.substring(0, 16) + '...');
 
     // Verify hash
     if (data.senha_hash !== senhaHash) {
-      showToast('Senha incorreta', 'error');
+      showLoginError('Senha incorreta');
       setLoginLoading(false);
       return;
     }
@@ -300,7 +346,7 @@ async function handleLogin(e) {
     // Verify ativo status (could be integer 1 or boolean true)
     const isAtivo = data.ativo === 1 || data.ativo === true || String(data.ativo) === "1" || String(data.ativo) === "true";
     if (!isAtivo) {
-      showToast('Usuário inativo', 'error');
+      showLoginError('Usuário inativo. Contate o administrador.');
       setLoginLoading(false);
       return;
     }
@@ -315,7 +361,7 @@ async function handleLogin(e) {
     showDashboard();
   } catch (err) {
     console.error('[Login] Erro inesperado:', err);
-    showToast('Erro ao conectar. Tente novamente.', 'error');
+    showLoginError('Erro inesperado: ' + (err.message || String(err)));
   }
 
   setLoginLoading(false);

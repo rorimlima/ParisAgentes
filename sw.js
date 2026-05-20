@@ -1,41 +1,31 @@
 // ============================================================
-// Service Worker - KILL SWITCH (v4)
-// This version immediately unregisters itself, deletes all caches,
-// and forces the browser to reload to fetch the latest fresh code.
+// Service Worker - Network First (v5)
+// Always fetches from network, no forced reload that could
+// interrupt login flow or cause race conditions.
 // ============================================================
 
-const CACHE_NAME = 'pd-bloqueios-v4';
+const SW_VERSION = 'v5';
 
 self.addEventListener('install', (event) => {
-  console.log('[SW v4] Install - Forcing skip waiting');
+  console.log(`[SW ${SW_VERSION}] Install - Skipping waiting`);
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW v4] Activate - DELETING ALL CACHES');
+  console.log(`[SW ${SW_VERSION}] Activate - Cleaning old caches`);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((name) => {
-          console.log('[SW v4] Deleting cache:', name);
+          console.log(`[SW ${SW_VERSION}] Deleting cache:`, name);
           return caches.delete(name);
         })
       );
     }).then(() => self.clients.claim())
-      .then(() => {
-        console.log('[SW v4] Forcing clients to reload');
-        return self.clients.matchAll({ type: 'window' }).then(windowClients => {
-          windowClients.forEach(client => {
-            if ('navigate' in client) {
-              client.navigate(client.url);
-            }
-          });
-        });
-      })
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  // Always fetch from network to ensure fresh code
+  // Always fetch from network (no caching)
   event.respondWith(fetch(event.request));
 });
