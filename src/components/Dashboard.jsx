@@ -120,7 +120,7 @@ export default function Dashboard({ user, onLogout }) {
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Buscar por placa, chassi, modelo ou cliente..."
+            placeholder="Buscar por placa, chassi ou modelo..."
             value={query}
             onChange={e => setQuery(e.target.value)}
           />

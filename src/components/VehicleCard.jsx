@@ -4,7 +4,6 @@ import './VehicleCard.css';
 export default function VehicleCard({ vehicle }) {
   const v = vehicle;
   const status = formatStatus(v.status_final);
-  const date = formatDate(v.bloqueado_em);
 
   return (
     <div className={`vehicle-card ${status.className}`}>
@@ -35,30 +34,6 @@ export default function VehicleCard({ vehicle }) {
             <span className="vc-value">{v.ano_modelo}</span>
           </div>
         )}
-        {v.razao_social && (
-          <div className="vc-row">
-            <span className="vc-label">Cliente</span>
-            <span className="vc-value">{v.razao_social}</span>
-          </div>
-        )}
-        <div className="vc-divider" />
-        <div className="vc-footer-row">
-          <div className="vc-row">
-            <span className="vc-label">Financeiro</span>
-            <span className={`vc-badge ${(v.status_financeiro || '').toLowerCase().includes('bloqueado') ? 'badge-danger' : 'badge-ok'}`}>
-              {v.status_financeiro || '—'}
-            </span>
-          </div>
-          <div className="vc-row">
-            <span className="vc-label">Documentação</span>
-            <span className={`vc-badge ${(v.status_documentacao || '').toLowerCase().includes('bloqueado') ? 'badge-danger' : 'badge-ok'}`}>
-              {v.status_documentacao || '—'}
-            </span>
-          </div>
-        </div>
-        <div className="vc-date">
-          <span>📅</span> Bloqueado em {date}
-        </div>
       </div>
     </div>
   );

@@ -10,10 +10,20 @@
     <meta name="apple-mobile-web-app-title" content="PD Bloqueios" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
     <link rel="apple-touch-icon" href="/icon-512.png" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Paris Dakar - Veículos Bloqueados</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('[PWA] Service Worker registrado:', reg.scope))
+            .catch((err) => console.error('[PWA] Erro ao registrar SW:', err));
+        });
+      }
+    </script>
   </body>
 </html>
