@@ -1,0 +1,181 @@
+/* ============================================================
+   Paris Dakar Agente — Global Styles
+   Premium dark theme with glassmorphism
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── CSS Variables / Design Tokens ─────────────────────── */
+:root {
+  --bg-primary: #060a10;
+  --bg-secondary: #0c1220;
+  --bg-card: rgba(14, 22, 38, 0.7);
+  --bg-card-hover: rgba(20, 30, 50, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --bg-input: rgba(255, 255, 255, 0.05);
+  --bg-input-focus: rgba(255, 255, 255, 0.08);
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(99, 148, 255, 0.3);
+
+  --text-primary: #f0f2f5;
+  --text-secondary: #8a94a6;
+  --text-muted: #5a6478;
+  --text-accent: #6b9fff;
+
+  --accent-primary: #4d8aff;
+  --accent-secondary: #6b9fff;
+  --accent-glow: rgba(77, 138, 255, 0.15);
+  --accent-gradient: linear-gradient(135deg, #4d8aff, #7c5cfc);
+
+  --danger: #ff4d6a;
+  --danger-bg: rgba(255, 77, 106, 0.1);
+  --danger-border: rgba(255, 77, 106, 0.25);
+
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.1);
+
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.1);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 40px rgba(77, 138, 255, 0.08);
+
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+/* ─── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a {
+  color: var(--text-accent);
+  text-decoration: none;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Utilities ─────────────────────────────────────────── */
+.mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Spinner ───────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+/* ─── Toast ─────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1000;
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 3.2s forwards;
+  pointer-events: none;
+}
+
+.toast-success {
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: var(--success);
+}
+
+.toast-error {
+  background: rgba(255, 77, 106, 0.15);
+  border: 1px solid rgba(255, 77, 106, 0.3);
+  color: var(--danger);
+}
+
+.toast-info {
+  background: rgba(77, 138, 255, 0.15);
+  border: 1px solid rgba(77, 138, 255, 0.3);
+  color: var(--accent-secondary);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; }
+  to   { opacity: 0; transform: translateX(-50%) translateY(16px); }
+}

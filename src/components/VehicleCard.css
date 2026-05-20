@@ -1,0 +1,189 @@
+/* ============================================================
+   VehicleCard Styles — Glass card with status badges
+   ============================================================ */
+
+.vehicle-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+  animation: cardFadeIn 0.4s ease both;
+}
+
+.vehicle-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger animation */
+.vehicle-card:nth-child(1)  { animation-delay: 0.02s; }
+.vehicle-card:nth-child(2)  { animation-delay: 0.04s; }
+.vehicle-card:nth-child(3)  { animation-delay: 0.06s; }
+.vehicle-card:nth-child(4)  { animation-delay: 0.08s; }
+.vehicle-card:nth-child(5)  { animation-delay: 0.10s; }
+.vehicle-card:nth-child(6)  { animation-delay: 0.12s; }
+.vehicle-card:nth-child(7)  { animation-delay: 0.14s; }
+.vehicle-card:nth-child(8)  { animation-delay: 0.16s; }
+.vehicle-card:nth-child(9)  { animation-delay: 0.18s; }
+.vehicle-card:nth-child(10) { animation-delay: 0.20s; }
+
+/* ─── Header ────────────────────────────────────────────── */
+.vc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.vc-placa {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.vc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.vc-status.critical {
+  background: rgba(255, 77, 106, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(255, 77, 106, 0.2);
+}
+
+.vc-status.blocked {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.vc-status.warning {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.vc-status.info {
+  background: rgba(77, 138, 255, 0.1);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(77, 138, 255, 0.2);
+}
+
+/* ─── Body ──────────────────────────────────────────────── */
+.vc-body {
+  padding: 14px 18px 16px;
+}
+
+.vc-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.vc-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.vc-value {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-word;
+  font-weight: 500;
+}
+
+.vc-value.mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+}
+
+/* ─── Divider ───────────────────────────────────────────── */
+.vc-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 10px 0;
+}
+
+/* ─── Footer Row ────────────────────────────────────────── */
+.vc-footer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ─── Badges ────────────────────────────────────────────── */
+.vc-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.badge-danger {
+  background: rgba(255, 77, 106, 0.12);
+  color: var(--danger);
+}
+
+.badge-ok {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--success);
+}
+
+/* ─── Date ──────────────────────────────────────────────── */
+.vc-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ─── Left border accent based on status ────────────────── */
+.vehicle-card.critical {
+  border-left: 3px solid var(--danger);
+}
+
+.vehicle-card.blocked,
+.vehicle-card.warning {
+  border-left: 3px solid var(--warning);
+}
+
+.vehicle-card.info {
+  border-left: 3px solid var(--accent-primary);
+}
